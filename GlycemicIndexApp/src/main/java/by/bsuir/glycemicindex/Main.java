@@ -7,8 +7,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Гликемический индекс продуктов");
-        primaryStage.show();
+        MainController controller = new MainController(primaryStage);
+        controller.show();
     }
 
     public static void main(String[] args) {
