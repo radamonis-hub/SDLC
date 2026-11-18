@@ -1,0 +1,34 @@
+@startuml CaterFlowOrderStates
+
+title Диаграмма состояний заявки CaterFlow
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam ArrowColor #526579
+skinparam State {
+    BackgroundColor #FFFFFF
+    BorderColor #526579
+    FontColor #263445
+}
+
+[*] --> New : Заявка зарегистрирована
+
+state "Новая заявка" as New
+state "В обработке" as Processing
+state "Подтверждена" as Confirmed
+state "Выполнена" as Completed
+state "Отменена" as Cancelled
+
+New --> Processing : Начало обработки
+New --> Cancelled : Отмена заявки
+
+Processing --> Confirmed : Подтверждение
+Processing --> Cancelled : Отмена заявки
+
+Confirmed --> Completed : Выполнение заказа
+Confirmed --> Cancelled : Отмена заявки
+
+Completed --> [*]
+Cancelled --> [*]
+
+@enduml

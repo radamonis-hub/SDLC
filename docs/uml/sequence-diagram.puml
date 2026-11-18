@@ -1,0 +1,68 @@
+@startuml CaterFlowOrderSequence
+
+title Диаграмма последовательности — оформление заявки
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam sequence {
+    ArrowColor #526579
+    LifeLineBorderColor #8295A8
+    LifeLineBackgroundColor #F8FAFC
+    ParticipantBorderColor #526579
+    ParticipantBackgroundColor #FFFFFF
+    ParticipantFontColor #263445
+    BoxBorderColor #8295A8
+    BoxBackgroundColor #F8FAFC
+}
+
+actor "Клиент" as Client
+boundary "Веб-интерфейс" as UI
+control "Сервер CaterFlow\n(Spring Boot)" as Server
+database "PostgreSQL" as DB
+participant "Почтовый сервис" as Mail
+
+Client -> UI : Отправить заявку
+activate UI
+
+UI -> Server : Передать данные заявки
+activate Server
+
+Server -> Server : Проверить корректность данных
+
+alt Данные некорректны
+    Server --> UI : Вернуть ошибки валидации
+    UI --> Client : Отобразить ошибки
+else Данные корректны
+    Server -> DB : Сохранить заявку\nсо статусом «Новая заявка»
+    activate DB
+
+    alt Ошибка сохранения
+        DB --> Server : Сообщение об ошибке
+        deactivate DB
+        Server --> UI : Сообщить об ошибке оформления
+        UI --> Client : Показать сообщение об ошибке
+    else Заявка сохранена
+        DB --> Server : Идентификатор заявки
+        deactivate DB
+
+        par Уведомление менеджера
+            Server -> Mail : Отправить уведомление\nо новой заявке
+            activate Mail
+            Mail --> Server : Результат отправки
+            deactivate Mail
+        else Подтверждение клиенту
+            Server -> Mail : Отправить подтверждение\nполучения заявки
+            activate Mail
+            Mail --> Server : Результат отправки
+            deactivate Mail
+        end
+
+        Server --> UI : Вернуть номер заявки
+        UI --> Client : Показать подтверждение оформления
+    end
+end
+
+deactivate Server
+deactivate UI
+
+@enduml

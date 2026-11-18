@@ -1,0 +1,119 @@
+
+@startuml CaterFlowUseCases
+
+left to right direction
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam defaultFontName Arial
+skinparam ArrowColor #526579
+skinparam ArrowThickness 1
+
+skinparam package {
+    BorderColor #8295A8
+    BackgroundColor #F8FAFC
+}
+
+skinparam usecase {
+    BorderColor #526579
+    BackgroundColor #FFFFFF
+}
+
+' ==========================================
+' АКТЁРЫ
+' ==========================================
+actor "Гость" as Guest
+actor "Зарегистрированный\nклиент" as Customer
+actor "Менеджер" as Manager
+actor "Администратор" as Admin
+
+' Клиент расширяет возможности гостя
+Customer --|> Guest
+
+' ==========================================
+' СИСТЕМА И ПРЕЦЕДЕНТЫ
+' ==========================================
+rectangle "CaterFlow" {
+
+    package "Публичная часть и Заказы" {
+        usecase "Просмотреть главную\nстраницу" as UC_Home
+        usecase "Просмотреть каталог\nблюд" as UC_Catalog
+        usecase "Найти блюда" as UC_Search
+        usecase "Просмотреть готовые\nнаборы" as UC_Sets
+        usecase "Сформировать меню" as UC_Menu
+        usecase "Выбрать готовый набор" as UC_SelectSet
+        usecase "Оформить заявку" as UC_Order
+        usecase "Указать данные\nмероприятия и контакты" as UC_Details
+        usecase "Рассчитать стоимость" as UC_TotalCost
+    }
+
+    package "Учётная запись" {
+        usecase "Зарегистрироваться" as UC_Register
+        usecase "Войти / Выйти" as UC_Auth
+        usecase "Управлять сохранённым меню" as UC_SaveMenu
+    }
+
+    package "Работа менеджера" {
+        usecase "Авторизоваться" as UC_EmployeeAuth
+        usecase "Просмотреть список\nзаявок" as UC_ViewOrders
+        usecase "Фильтровать заявки" as UC_FilterOrders
+        usecase "Просмотреть сведения\nо заявке" as UC_OrderDetails
+        usecase "Изменить состав\nзаявки" as UC_EditOrder
+        usecase "Изменить статус\nзаявки" as UC_ChangeStatus
+        usecase "Экспортировать заявку\nв PDF" as UC_ExportPDF
+    }
+
+    package "Администрирование" {
+        usecase "Управлять блюдами" as UC_Dishes
+        usecase "Управлять категориями\nи ценами" as UC_Categories
+        usecase "Управлять готовыми\nнаборами" as UC_ManageSets
+        usecase "Управлять доступностью\nблюд" as UC_Availability
+    }
+}
+
+' ==========================================
+' СВЯЗИ АКТЁРОВ С ПРЕЦЕДЕНТАМИ
+' ==========================================
+
+' Гость
+Guest --> UC_Home
+Guest --> UC_Catalog
+Guest --> UC_Search
+Guest -right-> UC_Sets
+Guest --> UC_Menu
+Guest --> UC_SelectSet
+Guest --> UC_Order
+Guest --> UC_Register
+
+' Зарегистрированный клиент
+Customer -right-> UC_Auth
+Customer --> UC_SaveMenu
+
+' Менеджер
+Manager --> UC_EmployeeAuth
+Manager --> UC_ViewOrders
+Manager --> UC_FilterOrders
+Manager --> UC_OrderDetails
+Manager --> UC_EditOrder
+Manager --> UC_ChangeStatus
+Manager --> UC_ExportPDF
+
+' Администратор
+Admin --> UC_EmployeeAuth
+Admin --> UC_Dishes
+Admin --> UC_Categories
+Admin --> UC_ManageSets
+Admin --> UC_Availability
+
+' ==========================================
+' ВНУТРЕННИЕ СВЯЗИ (INCLUDE / EXTEND)
+' ==========================================
+UC_Order .> UC_Details : <<include>>
+UC_Order .> UC_TotalCost : <<include>>
+
+UC_SelectSet .> UC_Menu : <<extend>>
+UC_SaveMenu .> UC_Menu : <<extend>>
+UC_ExportPDF .> UC_OrderDetails : <<extend>>
+
+@enduml
